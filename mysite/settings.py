@@ -13,13 +13,24 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+import dj_database_url
+
 # ------------------------------
 # 🔐 SECURITY
 # ------------------------------
-SECRET_KEY = 'django-insecure-ef554*i5g#5%90f-(l-8ls4if!jowh&9=am9@&%r&gsg5+#rf0'
-DEBUG = True  # Cambiar a False en Render
+# En producción, SECRET_KEY debe venir de variables de entorno
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-ef554*i5g#5%90f-(l-8ls4if!jowh&9=am9@&%r&gsg5+#rf0')
 
-ALLOWED_HOSTS = ["*"]  # Render exige permitir hosts externos
+# DEBUG debe ser False en producción
+DEBUG = 'RENDER' not in os.environ
+
+# Permitir el host de Render
+ALLOWED_HOSTS = []
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+else:
+    ALLOWED_HOSTS.append('*')
 
 
 # ------------------------------
@@ -95,10 +106,11 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # 🗄 DATABASE
 # ------------------------------
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        # Busca la variable DATABASE_URL, si no la encuentra usa sqlite local
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
+        conn_max_age=600
+    )
 }
 
 
