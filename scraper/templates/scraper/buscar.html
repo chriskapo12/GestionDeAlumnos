@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Scraper - Búsqueda{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="text-center mb-4">
+        <h1 class="display-5 fw-bold"
+            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            <i class="bi bi-search"></i> Web Scraper
+        </h1>
+        <p class="text-muted">Busca información en Wikipedia</p>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 class="mb-0"><i class="bi bi-search"></i> Realizar Búsqueda</h4>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-md-9">
+                        <label for="id_q" class="form-label fw-bold">
+                            <i class="bi bi-keyboard"></i> Palabra Clave
+                        </label>
+                        {{ form.q }}
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if resultados %}
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0">
+                <i class="bi bi-list-check"></i> Resultados de Búsqueda
+                <span class="badge bg-success ms-2">{{ resultados|length }} resultado{{ resultados|length|pluralize
+                    }}</span>
+            </h4>
+        </div>
+        <div class="card-body">
+            <div class="list-group">
+                {% for resultado in resultados %}
+                <a href="{{ resultado.link }}" target="_blank" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">
+                            <i class="bi bi-file-text text-primary"></i> {{ resultado.titulo }}
+                        </h5>
+                        <small><i class="bi bi-box-arrow-up-right"></i></small>
+                    </div>
+                    <small class="text-muted">{{ resultado.link }}</small>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    #id_q {
+        border-radius: 10px;
+        border: 2px solid #e0e0e0;
+        padding: 12px 15px;
+        width: 100%;
+    }
+
+    #id_q:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        outline: none;
+    }
+
+    .list-group-item {
+        border-radius: 10px !important;
+        margin-bottom: 10px;
+        border: 2px solid #e0e0e0;
+        transition: all 0.3s ease;
+    }
+
+    .list-group-item:hover {
+        transform: translateX(10px);
+        border-color: #4e73df;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}

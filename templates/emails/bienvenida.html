@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>¡Bienvenido/a!</h1>
+        </div>
+        <div class="content">
+            <h2>Hola {{ user.username }},</h2>
+            <p>Gracias por registrarte en nuestro Sistema de Gestión de Alumnos.</p>
+            <p>Tu cuenta ha sido creada exitosamente. Ahora puedes acceder a todas las funcionalidades del sistema:</p>
+            <ul>
+                <li>✅ Gestionar información de alumnos</li>
+                <li>✅ Generar reportes en PDF</li>
+                <li>✅ Enviar fichas por correo electrónico</li>
+            </ul>
+            <p>Esperamos que disfrutes usando nuestra plataforma.</p>
+            <p><strong>Datos de tu cuenta:</strong></p>
+            <ul>
+                <li><strong>Usuario:</strong> {{ user.username }}</li>
+                <li><strong>Email:</strong> {{ user.email }}</li>
+            </ul>
+        </div>
+        <div class="footer">
+            <p>Este es un correo automático, por favor no respondas a este mensaje.</p>
+            <p>&copy; 2025 Sistema de Gestión de Alumnos</p>
+        </div>
+    </div>
+</body>
+
+</html>

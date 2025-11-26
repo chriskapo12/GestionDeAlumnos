@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Gestión de Alumnos{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="display-5 fw-bold"
+                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </h1>
+            <p class="text-muted">Bienvenido, <strong>{{ user.username }}</strong></p>
+        </div>
+        <div>
+            <span class="badge bg-primary" style="font-size: 1rem; padding: 10px 20px;">
+                <i class="bi bi-people-fill"></i> {{ alumnos|length }} Alumno{{ alumnos|length|pluralize }}
+            </span>
+        </div>
+    </div>
+
+    <!-- Formulario para crear nuevo alumno -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 class="mb-0"><i class="bi bi-person-plus-fill"></i> Agregar Nuevo Alumno</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+
+                <div class="col-md-4">
+                    <label for="id_nombre" class="form-label fw-bold">
+                        <i class="bi bi-person"></i> Nombre Completo
+                    </label>
+                    {{ form.nombre }}
+                </div>
+
+                <div class="col-md-4">
+                    <label for="id_curso" class="form-label fw-bold">
+                        <i class="bi bi-book"></i> Curso
+                    </label>
+                    {{ form.curso }}
+                </div>
+
+                <div class="col-md-4">
+                    <label for="id_email" class="form-label fw-bold">
+                        <i class="bi bi-envelope"></i> Email
+                    </label>
+                    {{ form.email }}
+                </div>
+
+                <div class="col-12">
+                    <button class="btn btn-success btn-lg px-5" type="submit">
+                        <i class="bi bi-plus-circle"></i> Crear Alumno
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tabla de alumnos -->
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0"><i class="bi bi-list-ul"></i> Lista de Alumnos</h4>
+        </div>
+        <div class="card-body p-0">
+            {% if alumnos %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="px-4 py-3">#</th>
+                            <th scope="col" class="py-3"><i class="bi bi-person"></i> Nombre</th>
+                            <th scope="col" class="py-3"><i class="bi bi-book"></i> Curso</th>
+                            <th scope="col" class="py-3"><i class="bi bi-envelope"></i> Email</th>
+                            <th scope="col" class="py-3"><i class="bi bi-calendar"></i> Fecha Creación</th>
+                            <th scope="col" class="text-center py-3"><i class="bi bi-gear"></i> Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for alumno in alumnos %}
+                        <tr>
+                            <td class="px-4 align-middle">
+                                <span class="badge bg-secondary">{{ forloop.counter }}</span>
+                            </td>
+                            <td class="align-middle fw-bold">{{ alumno.nombre }}</td>
+                            <td class="align-middle">
+                                <span class="badge bg-info">{{ alumno.curso }}</span>
+                            </td>
+                            <td class="align-middle">
+                                <i class="bi bi-envelope-fill text-muted"></i> {{ alumno.email }}
+                            </td>
+                            <td class="align-middle text-muted">
+                                <i class="bi bi-calendar-check"></i> {{ alumno.creado|date:"d/m/Y H:i" }}
+                            </td>
+                            <td class="text-center align-middle">
+                                <a class="btn btn-sm btn-primary" href="{% url 'alumnos:enviar_pdf' alumno.id %}"
+                                    data-bs-toggle="tooltip" title="Enviar PDF por correo">
+                                    <i class="bi bi-file-earmark-pdf"></i> Enviar PDF
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center p-5">
+                <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
+                <h4 class="mt-3 text-muted">No hay alumnos registrados</h4>
+                <p class="text-muted">Agrega tu primer alumno usando el formulario de arriba.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Estadísticas rápidas -->
+    <div class="row mt-4 g-3">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="bi bi-people-fill text-primary" style="font-size: 3rem;"></i>
+                    <h3 class="mt-2">{{ alumnos|length }}</h3>
+                    <p class="text-muted mb-0">Total de Alumnos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="bi bi-person-check-fill text-success" style="font-size: 3rem;"></i>
+                    <h3 class="mt-2">{{ user.username }}</h3>
+                    <p class="text-muted mb-0">Usuario Activo</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="bi bi-file-earmark-pdf-fill text-danger" style="font-size: 3rem;"></i>
+                    <h3 class="mt-2">PDF</h3>
+                    <p class="text-muted mb-0">Reportes Disponibles</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #id_nombre,
+    #id_curso,
+    #id_email {
+        border-radius: 10px;
+        border: 2px solid #e0e0e0;
+        padding: 12px 15px;
+        width: 100%;
+    }
+
+    #id_nombre:focus,
+    #id_curso:focus,
+    #id_email:focus {
+        border-color: #4e73df;
+        box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        outline: none;
+    }
+</style>
+
+<script>
+    // Activar tooltips de Bootstrap
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+</script>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Gestión de Alumnos{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="text-center mb-5">
+        <h1 class="display-3 fw-bold"
+            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            ¡Bienvenido{% if user.is_authenticated %}, {{ user.username }}{% endif %}!
+        </h1>
+        <p class="lead text-muted mt-3">Sistema de Gestión de Alumnos</p>
+    </div>
+
+    <div class="row g-4 mt-4">
+        {% if user.is_authenticated %}
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="bi bi-speedometer2 text-primary" style="font-size: 4rem;"></i>
+                    </div>
+                    <h3 class="card-title">Dashboard</h3>
+                    <p class="card-text text-muted">
+                        Gestiona tus alumnos, crea nuevos registros y envía reportes por correo.
+                    </p>
+                    <a class="btn btn-primary btn-lg mt-3" href="{% url 'alumnos:dashboard' %}">
+                        <i class="bi bi-arrow-right-circle"></i> Ir al Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="bi bi-person-check text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    <h3 class="card-title">Sesión Activa</h3>
+                    <p class="card-text text-muted">
+                        Estás conectado como <strong>{{ user.username }}</strong>
+                    </p>
+                    <a class="btn btn-outline-danger btn-lg mt-3" href="{% url 'alumnos:logout' %}">
+                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="bi bi-box-arrow-in-right text-primary" style="font-size: 4rem;"></i>
+                    </div>
+                    <h3 class="card-title">Iniciar Sesión</h3>
+                    <p class="card-text text-muted">
+                        ¿Ya tienes una cuenta? Accede a tu dashboard.
+                    </p>
+                    <a class="btn btn-primary btn-lg mt-3" href="{% url 'alumnos:login' %}">
+                        <i class="bi bi-arrow-right-circle"></i> Iniciar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-body text-center p-5">
+                    <div class="mb-4">
+                        <i class="bi bi-person-plus text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    <h3 class="card-title">Crear Cuenta</h3>
+                    <p class="card-text text-muted">
+                        ¿Nuevo aquí? Regístrate para comenzar.
+                    </p>
+                    <a class="btn btn-success btn-lg mt-3" href="{% url 'alumnos:register' %}">
+                        <i class="bi bi-arrow-right-circle"></i> Registrarse
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="mt-5 p-4 rounded"
+        style="background: linear-gradient(135deg, rgba(78, 115, 223, 0.1), rgba(111, 134, 255, 0.1));">
+        <div class="row text-center">
+            <div class="col-md-4 mb-3">
+                <i class="bi bi-people-fill text-primary" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Gestión de Alumnos</h5>
+                <p class="text-muted small">Administra la información de tus estudiantes</p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <i class="bi bi-file-earmark-pdf text-danger" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Reportes PDF</h5>
+                <p class="text-muted small">Genera y envía fichas por correo</p>
+            </div>
+            <div class="col-md-4 mb-3">
+                <i class="bi bi-envelope-fill text-info" style="font-size: 3rem;"></i>
+                <h5 class="mt-3">Notificaciones</h5>
+                <p class="text-muted small">Recibe correos automáticos</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
