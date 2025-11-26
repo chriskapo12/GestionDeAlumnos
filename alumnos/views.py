@@ -131,6 +131,8 @@ def enviar_pdf(request, pk):
     )
     email_thread.start()
     
+    return redirect('alumnos:dashboard')
+
 
 from django.http import HttpResponse
 
