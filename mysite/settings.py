@@ -22,7 +22,8 @@ import dj_database_url
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-ef554*i5g#5%90f-(l-8ls4if!jowh&9=am9@&%r&gsg5+#rf0')
 
 # DEBUG debe ser False en producción
-DEBUG = 'RENDER' not in os.environ
+# DEBUG configurado por variable de entorno
+DEBUG = os.environ.get("DEBUG", "False") == "True"
 
 # Permitir el host de Render
 ALLOWED_HOSTS = []
