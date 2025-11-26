@@ -33,17 +33,40 @@ def logout_view(request):
     logout(request)
     return redirect('alumnos:login')
 
+import threading
+
+# Función auxiliar para enviar email de bienvenida en segundo plano
+def send_welcome_email_thread(user):
+    try:
+        subject = "Bienvenido/a"
+        body = render_to_string('emails/bienvenida.html', {'user': user})
+        email = EmailMessage(subject, body, to=[user.email])
+        email.content_subtype = "html"
+        email.send(fail_silently=True)
+    except Exception as e:
+        print(f"Error enviando email bienvenida: {e}")
+
+# Función auxiliar para enviar PDF en segundo plano
+def send_pdf_email_thread(user_email, alumno_nombre, pdf_content):
+    try:
+        subject = f"Ficha de {alumno_nombre}"
+        body = f"Adjunto PDF con datos del alumno {alumno_nombre}."
+        email = EmailMessage(subject, body, to=[user_email])
+        email.attach(f"alumno.pdf", pdf_content, 'application/pdf')
+        email.send(fail_silently=False)
+    except Exception as e:
+        print(f"Error enviando PDF: {e}")
+
 def register_view(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # enviar correo de bienvenida
-            subject = "Bienvenido/a"
-            body = render_to_string('emails/bienvenida.html', {'user': user})
-            email = EmailMessage(subject, body, to=[user.email])
-            email.content_subtype = "html"
-            email.send(fail_silently=True)
+            
+            # Enviar correo en un hilo separado para no bloquear/romper el server
+            email_thread = threading.Thread(target=send_welcome_email_thread, args=(user,))
+            email_thread.start()
+            
             login(request, user)
             return redirect('alumnos:dashboard')
     else:
@@ -82,6 +105,7 @@ def enviar_pdf(request, pk):
     request.session['ultimo_envio_pdf'] = ahora
 
     alumno = get_object_or_404(Alumno, pk=pk, user=request.user)
+    
     # Generar PDF con ReportLab en memoria
     buffer = BytesIO()
     p = canvas.Canvas(buffer, pagesize=A4)
@@ -95,14 +119,17 @@ def enviar_pdf(request, pk):
     p.drawString(50, 740, f"Creado: {fecha_local.strftime('%d/%m/%Y %H:%M')}")
     p.showPage()
     p.save()
-    buffer.seek(0)
-
-    # Enviar por email al docente o al mismo usuario
-    subject = f"Ficha de {alumno.nombre}"
-    body = f"Adjunto PDF con datos del alumno {alumno.nombre}."
-    email = EmailMessage(subject, body, to=[request.user.email])  # o docente@example.com
-    email.attach(f"alumno_{alumno.id}.pdf", buffer.read(), 'application/pdf')
-    email.send(fail_silently=False)
     
-    messages.success(request, f"PDF de {alumno.nombre} enviado correctamente a tu correo.")
+    # Obtener el contenido del PDF para enviarlo
+    pdf_content = buffer.getvalue()
+    buffer.close()
+
+    # Enviar por email en segundo plano (threading)
+    email_thread = threading.Thread(
+        target=send_pdf_email_thread, 
+        args=(request.user.email, alumno.nombre, pdf_content)
+    )
+    email_thread.start()
+    
+    messages.success(request, f"PDF de {alumno.nombre} se está enviando a tu correo.")
     return redirect('alumnos:dashboard')
