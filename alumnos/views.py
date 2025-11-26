@@ -133,3 +133,42 @@ def enviar_pdf(request, pk):
     
     messages.success(request, f"PDF de {alumno.nombre} se está enviando a tu correo.")
     return redirect('alumnos:dashboard')
+
+from django.http import HttpResponse
+
+@login_required
+def test_email(request):
+    """Vista para probar la configuración de correo y ver errores en pantalla"""
+    try:
+        subject = "Prueba de Diagnóstico - Render"
+        body = "Si lees esto, el email funciona correctamente desde Render."
+        email = EmailMessage(subject, body, to=[request.user.email])
+        
+        # Intentamos enviar (sin fail_silently para ver el error)
+        email.send(fail_silently=False)
+        
+        return HttpResponse(f"""
+            <div style='font-family: sans-serif; padding: 20px; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; border-radius: 5px;'>
+                <h1>✅ ÉXITO</h1>
+                <p>El correo se envió correctamente a: <strong>{request.user.email}</strong></p>
+                <p>Revisa tu bandeja de entrada (y spam).</p>
+                <a href='/dashboard/'>Volver al Dashboard</a>
+            </div>
+        """)
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        return HttpResponse(f"""
+            <div style='font-family: monospace; padding: 20px; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; border-radius: 5px;'>
+                <h1>❌ ERROR DE ENVÍO</h1>
+                <p>Ocurrió un error al intentar enviar el correo:</p>
+                <pre style='background: #fff; padding: 15px; border: 1px solid #ddd; overflow-x: auto;'>{error_details}</pre>
+                <p><strong>Sugerencias:</strong></p>
+                <ul>
+                    <li>Verifica que EMAIL_USER y EMAIL_PASSWORD sean correctos en Render.</li>
+                    <li>Asegúrate de que la contraseña no tenga espacios.</li>
+                    <li>Verifica que la "Verificación en 2 pasos" siga activa en Google.</li>
+                </ul>
+                <a href='/dashboard/'>Volver al Dashboard</a>
+            </div>
+        """)

@@ -10,4 +10,5 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('enviar-pdf/<int:pk>/', views.enviar_pdf, name='enviar_pdf'),
+    path('test-email/', views.test_email, name='test_email'),
 ]
